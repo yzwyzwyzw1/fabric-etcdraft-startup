@@ -1,0 +1,49 @@
+version: '2'
+
+volumes:
+  orderer3.chinaso.com:
+
+
+#networks:
+#  byfn:
+
+
+services:
+  orderer3.chinaso.com:
+    image: hyperledger/fabric-orderer:1.4.3
+    container_name: orderer3.chinaso.com
+    environment:
+      - COMPOSE_PROJECT_NAME=fabric-etcdraft
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ../../../fixture/channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ../../../fixture/crypto-config/ordererOrganizations/chinaso.com/orderers/orderer3.chinaso.com/msp:/var/hyperledger/orderer/msp
+      - ../../../fixture/crypto-config/ordererOrganizations/chinaso.com/orderers/orderer3.chinaso.com/tls/:/var/hyperledger/orderer/tls
+      - orderer3.chinaso.com:/var/hyperledger/production/orderer
+    ports:
+      - 10050:10050
+    networks:
+      default:
+        aliases:
+          - etcdraftnetwork
+    extra_hosts:
+      - "orderer0.chinaso.com:127.0.0.1"
+      - "orderer1.chinaso.com:127.0.0.1"
+      - "orderer2.chinaso.com:127.0.0.1"
+      - "orderer3.chinaso.com:127.0.0.1"
+      - "orderer4.chinaso.com:127.0.0.1"
